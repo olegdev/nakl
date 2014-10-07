@@ -1,23 +1,23 @@
-describe('service.Ping', function() {
+describe('nakl.Ping', function() {
 
 	var Ping,
 		$httpBackend;
 
-	beforeEach(angular.mock.module('service.Ping'));
-	beforeEach(angular.mock.inject(function(_$httpBackend_, _Ping_) {
+	beforeEach(angular.mock.module('nakl.Ping'));
+	beforeEach(angular.mock.inject(function(_$httpBackend_, _NaklPing_) {
 		$httpBackend = _$httpBackend_;
-		Ping = _Ping_;
+		NaklPing = _NaklPing_;
 	}));
 
 	it('Starts ping server on demand', function() {
 		$httpBackend.expectGET('/ping_cmd.pl').respond(200);
-		Ping.config({url: '/ping_cmd.pl'}).ping();
+		NaklPing.config({url: '/ping_cmd.pl'}).ping();
 		$httpBackend.flush();
 	});
 
 	it('Fires ping event', function(done) {
 		$httpBackend.expectGET('/ping_cmd.pl').respond(200);
-		Ping
+		NaklPing
 			.config({url: '/ping_cmd.pl'})
 			.eventsOn('ping', function() {
 				done();
@@ -28,7 +28,7 @@ describe('service.Ping', function() {
 
 	it('Starts ping server on init', function(done) {
 		$httpBackend.expectGET('/ping_cmd.pl').respond(200);		
-		Ping
+		NaklPing
 			.config({
 				url: '/ping_cmd.pl',
 				period: 0

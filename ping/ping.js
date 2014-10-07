@@ -1,5 +1,5 @@
-angular.module('service.Ping', ['ng', 'nakl.Events'])
-	.factory('Ping', function($http, $log, NaklEvents) {
+angular.module('nakl.Ping', ['ng', 'nakl.Events'])
+	.factory('NaklPing', function($http, $log, NaklEvents) {
 
 		var events = NaklEvents.factory({prefix: 'ping'}),
 			config = {

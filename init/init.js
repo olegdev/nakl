@@ -29,8 +29,16 @@ angular.module('nakl.Init', ['nakl.Events'])
 			}
 
 			var getProviderName = function(module) {
-				var parts = module.name.split('.');
-				return parts[parts.length-1];
+				var parts, name = '', i;
+				if (!module.provider) {
+					 parts = module.name.split('.');
+					 for(i = 0; i < parts.length; i++) {
+					 	name += parts[i].charAt(0).toUpperCase() + parts[i].substring(1);
+					 }
+					 return name;
+				} else {
+					return module.provider;
+				}				
 			}
 
 			var decorateAsDeferred = function(obj) {

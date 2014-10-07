@@ -5,8 +5,8 @@ describe('nakl.Init', function() {
 		$q;
 
 	// mock module with initializer
-	angular.module('service.TestService', [])
-		.factory('TestService', function() {
+	angular.module('service.Test', [])
+		.factory('ServiceTest', function() {
 			return {
 				config: function(cfg) {
 					this.cfg = cfg;
@@ -41,6 +41,16 @@ describe('nakl.Init', function() {
 			}
 		});
 
+	// service with custom provider
+	angular.module('TestService4', [])
+		.factory('TestService4Provider', function() {
+			return {
+				init: function() {
+					//
+				}
+			}
+		});
+
 	beforeEach(angular.mock.module('nakl.Init'));
 	beforeEach(angular.mock.inject(function(_NaklInit_, _$rootScope_, _$q_) {
 		NaklInit = _NaklInit_;
@@ -51,7 +61,7 @@ describe('nakl.Init', function() {
 	it('Success initialization', function(done) {
 		NaklInit
 			.config({
-				modules: 'service.TestService'
+				modules: 'service.Test'
 			})
 			.run(function() {					
 				expect(1).toBe(1);
@@ -93,10 +103,28 @@ describe('nakl.Init', function() {
 		$rootScope.$apply();
 	});
 
+	it('Initialization with custom provider', function(done) {
+		NaklInit
+			.config({
+				modules: [{
+					name: 'TestService4',
+					provider: 'TestService4Provider'
+				}],
+			})
+			.run(function() {					
+				expect(1).toBe(1);
+				done();
+			}, function(err) {
+				expect(1).toBe(err);
+				done();
+			});
+		$rootScope.$apply();
+	});
+
 	it('Multiple initialization', function(done) {
 		NaklInit
 			.config({
-				modules: ['service.TestService', 'service.TestService']
+				modules: ['service.Test', 'service.Test']
 			})
 			.run(function() {					
 				expect(1).toBe(1);
@@ -113,7 +141,7 @@ describe('nakl.Init', function() {
 		NaklInit
 			.config({
 				modules: [{
-					name: 'service.TestService',
+					name: 'service.Test',
 					onInit: function() {
 						done();
 					}
@@ -127,7 +155,7 @@ describe('nakl.Init', function() {
 		NaklInit
 			.config({
 				modules: [{
-					name: 'service.TestService',
+					name: 'service.Test',
 					config: {
 						foo: 1
 					},
