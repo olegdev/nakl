@@ -1,7 +1,7 @@
-angular.module('nakl.Ping', ['ng', 'nakl.Events'])
-	.factory('NaklPing', function($http, $log, NaklEvents) {
+angular.module('core.Ping', ['ng', 'core.Events'])
+	.factory('CorePing', function($http, $log, CoreEvents) {
 
-		var events = NaklEvents.factory({prefix: 'ping'}),
+		var events = CoreEvents.factory({prefix: 'ping'}),
 			config = {
 				period: 60,
 				url: ''

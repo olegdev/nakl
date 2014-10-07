@@ -1,14 +1,14 @@
-describe('nakl.Events', function() {
+describe('core.Events', function() {
 
-	var NaklEvents;
+	var CoreEvents;
 
-	beforeEach(angular.mock.module('nakl.Events'));
-	beforeEach(angular.mock.inject(function(_NaklEvents_) {
-		NaklEvents = _NaklEvents_;
+	beforeEach(angular.mock.module('core.Events'));
+	beforeEach(angular.mock.inject(function(_CoreEvents_) {
+		CoreEvents = _CoreEvents_;
 	}));
 
 	it('Triggers and catches events', function() {
-		var events = NaklEvents.factory({prefix: 'prefix'}),
+		var events = CoreEvents.factory({prefix: 'prefix'}),
 			arg1 = 1,
 			arg2 = 2;
 		events.on('event', function(a1, a2) {
@@ -19,7 +19,7 @@ describe('nakl.Events', function() {
 	});
 
 	it('Triggers and catches a batch', function(done) {
-		var events = NaklEvents.factory({prefix: 'prefix'}),
+		var events = CoreEvents.factory({prefix: 'prefix'}),
 			e1Catched;
 
 		events.batchOn([{

@@ -1,5 +1,5 @@
-angular.module('nakl.Events', [])
-	.factory('NaklEvents', function($rootScope) {
+angular.module('core.Events', [])
+	.factory('CoreEvents', function($rootScope) {
 		
 		var EventsProto = function(config) {
 			this.prefix = config.prefix || '';

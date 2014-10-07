@@ -1,7 +1,7 @@
-angular.module('nakl.Init', ['nakl.Events'])
-	.factory('NaklInit', function($q, NaklEvents) {
+angular.module('core.Init', ['core.Events'])
+	.factory('CoreInit', function($q, CoreEvents) {
 
-		var events = NaklEvents.factory({prefix: 'nakl-initializer'}),
+		var events = CoreEvents.factory({prefix: 'core-initializer'}),
 			modules = [];
 
 		function applyConfig(cfg) {

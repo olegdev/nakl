@@ -1,6 +1,6 @@
-describe('nakl.Init', function() {	
+describe('core.Init', function() {	
 
-	var NaklInit,
+	var CoreInit,
 		$rootScope,
 		$q;
 
@@ -51,15 +51,15 @@ describe('nakl.Init', function() {
 			}
 		});
 
-	beforeEach(angular.mock.module('nakl.Init'));
-	beforeEach(angular.mock.inject(function(_NaklInit_, _$rootScope_, _$q_) {
-		NaklInit = _NaklInit_;
+	beforeEach(angular.mock.module('core.Init'));
+	beforeEach(angular.mock.inject(function(_CoreInit_, _$rootScope_, _$q_) {
+		CoreInit = _CoreInit_;
 		$rootScope = _$rootScope_;
 		$q = _$q_;
 	}));
 	
 	it('Success initialization', function(done) {
-		NaklInit
+		CoreInit
 			.config({
 				modules: 'service.Test'
 			})
@@ -74,7 +74,7 @@ describe('nakl.Init', function() {
 	});
 
 	it('Failure initialization', function(done) {
-		NaklInit
+		CoreInit
 			.config({
 				modules: 'TestService2'
 			})
@@ -89,7 +89,7 @@ describe('nakl.Init', function() {
 	});
 
 	it('Initialization with not deferred initalizer', function(done) {
-		NaklInit
+		CoreInit
 			.config({
 				modules: 'TestService3'
 			})
@@ -104,7 +104,7 @@ describe('nakl.Init', function() {
 	});
 
 	it('Initialization with custom provider', function(done) {
-		NaklInit
+		CoreInit
 			.config({
 				modules: [{
 					name: 'TestService4',
@@ -122,7 +122,7 @@ describe('nakl.Init', function() {
 	});
 
 	it('Multiple initialization', function(done) {
-		NaklInit
+		CoreInit
 			.config({
 				modules: ['service.Test', 'service.Test']
 			})
@@ -138,7 +138,7 @@ describe('nakl.Init', function() {
 	});
 
 	it('Initialization events', function(done) {
-		NaklInit
+		CoreInit
 			.config({
 				modules: [{
 					name: 'service.Test',
@@ -152,7 +152,7 @@ describe('nakl.Init', function() {
 	});
 
 	it('Config before init', function(done) {
-		NaklInit
+		CoreInit
 			.config({
 				modules: [{
 					name: 'service.Test',

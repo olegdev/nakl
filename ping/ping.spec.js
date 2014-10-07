@@ -1,23 +1,23 @@
-describe('nakl.Ping', function() {
+describe('core.Ping', function() {
 
-	var Ping,
+	var CorePing,
 		$httpBackend;
 
-	beforeEach(angular.mock.module('nakl.Ping'));
-	beforeEach(angular.mock.inject(function(_$httpBackend_, _NaklPing_) {
+	beforeEach(angular.mock.module('core.Ping'));
+	beforeEach(angular.mock.inject(function(_$httpBackend_, _CorePing_) {
 		$httpBackend = _$httpBackend_;
-		NaklPing = _NaklPing_;
+		CorePing = _CorePing_;
 	}));
 
 	it('Starts ping server on demand', function() {
 		$httpBackend.expectGET('/ping_cmd.pl').respond(200);
-		NaklPing.config({url: '/ping_cmd.pl'}).ping();
+		CorePing.config({url: '/ping_cmd.pl'}).ping();
 		$httpBackend.flush();
 	});
 
 	it('Fires ping event', function(done) {
 		$httpBackend.expectGET('/ping_cmd.pl').respond(200);
-		NaklPing
+		CorePing
 			.config({url: '/ping_cmd.pl'})
 			.eventsOn('ping', function() {
 				done();
@@ -28,7 +28,7 @@ describe('nakl.Ping', function() {
 
 	it('Starts ping server on init', function(done) {
 		$httpBackend.expectGET('/ping_cmd.pl').respond(200);		
-		NaklPing
+		CorePing
 			.config({
 				url: '/ping_cmd.pl',
 				period: 0
