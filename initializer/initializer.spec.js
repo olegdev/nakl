@@ -8,6 +8,9 @@ describe('nakl.Init', function() {
 	angular.module('service.TestService', [])
 		.factory('TestService', function() {
 			return {
+				config: function(cfg) {
+					this.cfg = cfg;
+				},
 				init: function() {
 					var d = $q.defer();
 					d.resolve();
@@ -106,40 +109,37 @@ describe('nakl.Init', function() {
 		$rootScope.$apply();
 	});
 
-	it('Config initialization', function() {
+	it('Initialization events', function(done) {
 		NaklInit
 			.config({
 				modules: [{
-					name: 'service.TestService'
+					name: 'service.TestService',
+					onInit: function() {
+						done();
+					}
 				}]
-			})
-			.run(function() {					
-				expect(1).toBe(1);
-				done();
-			}, function(err) {
-				expect(1).toBe(err);
-				done();
-			});
+			})			
+			.run();
+		$rootScope.$apply();
 	});
 
-	// it('Initialization events', function(done) {
-	// 	NaklInit
-	// 		.config({
-	// 			modules: ['service.TestService']
-	// 		})
-	// 		.eventsOn([{
-	// 			name: 'service.TestService-init',
-	// 			fn: function() {
-	// 				done();
-	// 			}
-	// 		}])
-	// 		.run();
-
-	// 	$rootScope.$apply();
-	// });
+	it('Config before init', function(done) {
+		NaklInit
+			.config({
+				modules: [{
+					name: 'service.TestService',
+					config: {
+						foo: 1
+					},
+					onInit: function(module) {
+						if (module.cfg.foo == 1) {
+							done();
+						}
+					}
+				}]
+			})			
+			.run();
+		$rootScope.$apply();
+	});
 
 });
-
-/**
- NaklInit.config().run()
-*/

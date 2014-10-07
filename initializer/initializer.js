@@ -4,7 +4,7 @@ angular.module('nakl.Init', ['nakl.Events'])
 		var events = NaklEvents.factory({prefix: 'nakl-initializer'}),
 			modules = [];
 
-		function config(cfg) {
+		function applyConfig(cfg) {
 			if (typeof cfg.modules == 'string') {
 				modules = [cfg.modules];
 			} else {
@@ -13,9 +13,25 @@ angular.module('nakl.Init', ['nakl.Events'])
 		}
 
 		function internalRun() {
-			var d = $q.defer(),
-				injector = angular.injector(modules),
-				injectings = [];
+			var d = $q.defer(),		
+				moduleNames = [],		
+				moduleProviders = [],
+				module, injector, i;
+
+			var normalizeModule = function(module) {
+				if (typeof module == 'string') {
+					return {
+						name: module
+					};
+				} else {
+					return module;
+				}
+			}
+
+			var getProviderName = function(module) {
+				var parts = module.name.split('.');
+				return parts[parts.length-1];
+			}
 
 			var decorateAsDeferred = function(obj) {
 				if (obj && typeof obj.then == 'function') { // считаем что это deferred объект
@@ -29,65 +45,63 @@ angular.module('nakl.Init', ['nakl.Events'])
 				}
 			}
 
-			var getInjectingNameFor = function(module) {
-				var parts;
-				if (typeof module == 'object') {
-					if (!module.name) {
-						throw "Название модуля не задано";
-					} else {
-						parts = module.name.split('.');
-					}
-				} else {
-					parts = module.split('.');
-				}
-				return parts[parts.length-1];
-			}
-
-			var fireEvent = function(eventName, moduleIndex) {
-				events.trigger(modules[moduleIndex]+ '-' + eventName);
-			}
-
 			var invokeFn = function() {
 				var moduleInstances = arguments,
 					_runInitializers = function(moduleInstances, index, success, failure) {
-						if (typeof moduleInstances[index]['init'] != 'function') {
-							failure('Метод init не определен в модуле ' + injectings[index]);
-							return;
+						// config invoke
+						if (modules[index].config && typeof moduleInstances[index]['config'] == 'function') {
+							try {
+								moduleInstances[index]['config'](modules[index].config);
+							} catch(e) {
+								failure(index, e.message);
+							}
 						}
-						try {
-							decorateAsDeferred(moduleInstances[index]['init']())
-								.then(function() {
-									fireEvent('init', index);
-									if (++index < moduleInstances.length) {
-										_runInitializers(moduleInstances, index, success, failure);
-									} else {
-										success();
-									}
-								}, function(error) {
-									failure(index, error);
-								});
-						} catch(e) {
-							failure(index, e.message);
+						// init invoke
+						if (typeof moduleInstances[index]['init'] == 'function') {
+							try {
+								decorateAsDeferred(moduleInstances[index]['init']())
+									.then(function() {
+										if (typeof modules[index].onInit == 'function') {
+											modules[index].onInit(moduleInstances[index]);
+										}
+										if (++index < moduleInstances.length) {
+											_runInitializers(moduleInstances, index, success, failure);
+										} else {
+											success();
+										}
+									}, function(error) {
+										failure(index, error);
+									});
+							} catch(e) {
+								failure(index, e.message);
+							}
+						} else {
+							failure(index, 'Метод init не определен в модуле ' + modules[index]);
+							return;
 						}
 					}
 				if (moduleInstances.length) {
 					_runInitializers(moduleInstances, 0, function() {
 						d.resolve();
 					}, function(index, err) {
-						d.reject('Ошибка при вызове инициализатора ' + injectings[index] + ': ' + err);		
+						d.reject('Ошибка при вызове инициализатора модуля' + modules[index] + ': ' + err);
 					});
 				} else {
 					d.resolve();
 				}
 			}			
 
-			for(var i = 0; i < modules.length; i++) {
-				injectings.push(getInjectingNameFor(modules[i]));
+			for(i = 0; i < modules.length; i++) {
+				modules[i] = normalizeModule(modules[i]);
+				moduleNames.push(modules[i].name);
+				moduleProviders.push(getProviderName(modules[i]));
 			}
-			injectings.push(invokeFn);
 
+			moduleProviders.push(invokeFn);
+
+			injector = angular.injector(moduleNames);
 			try {
-				injector.invoke(injectings);
+				injector.invoke(moduleProviders);
 			} catch(e) {
 				d.reject('Ошибка при подключении модулей: ' + e.message);
 			}
@@ -97,7 +111,7 @@ angular.module('nakl.Init', ['nakl.Events'])
 
 		return {
 			config: function(cfg) {
-				config(cfg);
+				applyConfig(cfg);
 				return this;
 			},
 			run: function(success, failure) {
@@ -112,15 +126,6 @@ angular.module('nakl.Init', ['nakl.Events'])
 						}
 					});
 				return this;
-			},
-			eventsOn: function() {
-				if (typeof arguments[0] == 'string') {
-					events.on.apply(events, arguments);
-				} else {
-					events.batchOn.apply(events, arguments);
-				}
-				return this;
 			}
-
 		}
 	});
